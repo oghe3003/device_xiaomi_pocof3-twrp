@@ -35,14 +35,14 @@ TARGET_2ND_CPU_VARIANT := generic
 TARGET_2ND_CPU_VARIANT_RUNTIME := kryo385
 
 # Bootloader
-TARGET_BOOTLOADER_BOARD_NAME := alioth
+TARGET_BOOTLOADER_BOARD_NAME := kona
 TARGET_NO_BOOTLOADER := true
 TARGET_USES_UEFI := true
 
 # Platform
-TARGET_BOARD_PLATFORM := kona
+TARGET_BOARD_PLATFORM := sm8250
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno650
-QCOM_BOARD_PLATFORMS += alioth
+QCOM_BOARD_PLATFORMS += sm8250
 
 # A/B
 AB_OTA_UPDATER := true
@@ -53,7 +53,7 @@ BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom androidboot.console=ttyMSM0 an
 BOARD_KERNEL_CMDLINE += androidboot.init_fatal_reboot_target=recovery
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_OFFSET  := 0x00008000
-BOARD_RAMDISK_OFFSET := 0x02000000
+BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_TAGS_OFFSET    := 0x00000100
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_BOOTIMG_HEADER_VERSION := 3
@@ -72,7 +72,7 @@ BOARD_MKBOOTIMG_ARGS := \
             --header_version $(BOARD_BOOT_HEADER_VERSION)
 
 # Assert
-TARGET_OTA_ASSERT_DEVICE := alioth,aliothin
+TARGET_OTA_ASSERT_DEVICE := alioth, aliothin
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 262144
@@ -130,7 +130,20 @@ TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_INCLUDE_METADATA_DECRYPT := true
 
-TARGET_RECOVERY_DEVICE_MODULES += libion libandroidicu vendor.display.config@1.0 vendor.display.config@2.0 libdisplayconfig.qti vendor.qti.hardware.vibrator.service vendor.qti.hardware.vibrator.impl libqtivibratoreffect
+#TARGET_RECOVERY_DEVICE_MODULES += libion libandroidicu vendor.display.config@1.0 vendor.display.config@2.0 libdisplayconfig.qti vendor.qti.hardware.vibrator.service vendor.qti.hardware.vibrator.impl libqtivibratoreffect
+
+# Additional binaries & libraries needed for recovery
+TARGET_RECOVERY_DEVICE_MODULES += ashmemd
+TW_RECOVERY_ADDITIONAL_RELINK_BINARY_FILES += \
+    $(TARGET_OUT_EXECUTABLES)/ashmemd
+
+TARGET_RECOVERY_DEVICE_MODULES += \
+    ashmemd_aidl_interface-cpp \
+    libashmemd_client
+
+TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
+    $(TARGET_OUT_SHARED_LIBRARIES)/ashmemd_aidl_interface-cpp.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libashmemd_client.so
 
 # System as root
 BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
